@@ -1,6 +1,6 @@
 const items = document.querySelector('.items');
 const cartItems = document.querySelector('.cart__items');
-const totalPrice = document.querySelector('#total-price');
+// const totalPrice = document.querySelector('#total-price');
 
 let organizadorLocalStorage = []; // aula do Guthias e da Hellen
 
@@ -21,7 +21,6 @@ const createCustomElement = (element, className, innerText) => {
 const createProductItemElement = ({ sku, name, image, price }) => {
   const section = document.createElement('section');
   section.className = 'item';
-
   section.appendChild(createCustomElement('span', 'item__sku', sku));
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
@@ -31,7 +30,7 @@ const createProductItemElement = ({ sku, name, image, price }) => {
   return section;
 };
 
-const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerHTML;
+const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
 const cartItemClickListener = (event) => {
   const remover = event.target;
@@ -49,13 +48,8 @@ const cartItemClickListener = (event) => {
 const createCartItemElement = ({ sku, name, salePrice }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
-  li.innerHTML = `<button id="${sku}" class=".remover-do-carrinho">
-  SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}
-  </button>`;
+  li.innerHTML = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.addEventListener('click', cartItemClickListener);
-  // const cartList = document.querySelector('.cart__items');
-  // const cartItemsList = cartList.innerHTML;
-  // saveCartItems(cartItemsList);
   return li;
 };
 
