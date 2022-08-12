@@ -1,5 +1,8 @@
 const items = document.querySelector('.items');
 const cartItems = document.querySelector('.cart__items');
+const totalPrice = document.querySelector('#total-price');
+
+let organizadorLocalStorage = []; // aula do Guthias e da Hellen
 
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
@@ -15,31 +18,40 @@ const createCustomElement = (element, className, innerText) => {
   return e;
 };
 
-const createProductItemElement = ({ sku, name, image }) => {
+const createProductItemElement = ({ sku, name, image, price }) => {
   const section = document.createElement('section');
   section.className = 'item';
 
   section.appendChild(createCustomElement('span', 'item__sku', sku));
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
+  section.appendChild(createCustomElement('span', 'item__price', `$${price}`));
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
 
   return section;
 };
-const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
+
+const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerHTML;
 
 const cartItemClickListener = (event) => {
-  const remover = event.target.parentElement;
-  remover.removeChild(event.target);
+  const remover = event.target;
+  console.log(remover.id);
+  remover.remove(event.target);
+  // const aux = organizadorLocalStorage.filter((a) => a.sku === remover.id);
+  const indice = organizadorLocalStorage.findIndex((a) => a.sku === remover.id);
+  organizadorLocalStorage = organizadorLocalStorage.filter((_, i) => i !== indice);
+  console.log(organizadorLocalStorage);
   // const cartList = document.querySelector('.cart__items');
   // const cartItemsList = cartList.innerHTML;
-  // saveCartItems(cartItemsList);
+  saveCartItems(organizadorLocalStorage);
 };
 
 const createCartItemElement = ({ sku, name, salePrice }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
-  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
+  li.innerHTML = `<button id="${sku}" class=".remover-do-carrinho">
+  SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}
+  </button>`;
   li.addEventListener('click', cartItemClickListener);
   // const cartList = document.querySelector('.cart__items');
   // const cartItemsList = cartList.innerHTML;
@@ -50,11 +62,15 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
 const addCarrinho = async (event) => {
   const ids = getSkuFromProductItem(event.target.parentElement);
   const item = await fetchItem(ids);
-  const itemCarrinho = { sku: item.id, name: item.title, salePrice: item.price };
+  const itemCarrinho = { 
+    sku: item.id,
+    name: item.title, 
+    salePrice: item.price,
+  };
+  organizadorLocalStorage.push(itemCarrinho);
   cartItems.appendChild(createCartItemElement(itemCarrinho));
-  const cartList = document.querySelector('.cart__items');
-  const cartItemsList = cartList.innerHTML;
-  saveCartItems(cartItemsList);
+  saveCartItems(organizadorLocalStorage);
+  // console.log(organizadorLocalStorage);
   return itemCarrinho;
 };
 
@@ -65,13 +81,22 @@ const infosFetchProducts = async (query) => {
     sku: result.id,
     name: result.title,
     image: result.thumbnail,
-    });
+    price: result.price,
+  });
     items.appendChild(criarProduto);
   });
   const buttonAdd = document.querySelectorAll('.item__add');
   buttonAdd.forEach((e) => e.addEventListener('click', addCarrinho));
+  return results;
+};
+
+const render = () => {
+  organizadorLocalStorage = getSavedCartItems('cartItems') || [];
+  console.log(organizadorLocalStorage);
+  organizadorLocalStorage.forEach((e) => cartItems.appendChild(createCartItemElement(e)));
 };
 
 window.onload = async () => { 
   await infosFetchProducts('computador');
+  render();
 };
