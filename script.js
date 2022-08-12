@@ -1,6 +1,8 @@
 const items = document.querySelector('.items');
 const cartItems = document.querySelector('.cart__items');
-// const totalPrice = document.querySelector('#total-price');
+const btnDeleteItens = document.querySelector('.empty-cart');
+const olCartItems = document.querySelector('#ol-cart-itens');
+const totalPrice = document.querySelector('#total-price');
 
 let organizadorLocalStorage = []; // aula do Guthias e da Hellen
 
@@ -48,6 +50,7 @@ const cartItemClickListener = (event) => {
 const createCartItemElement = ({ sku, name, salePrice }) => {
   const li = document.createElement('li');
   li.className = 'cart__item';
+  li.id = sku;
   li.innerHTML = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.addEventListener('click', cartItemClickListener);
   return li;
@@ -83,6 +86,16 @@ const infosFetchProducts = async (query) => {
   buttonAdd.forEach((e) => e.addEventListener('click', addCarrinho));
   return results;
 };
+
+// const deleteItensCarrinho = () => {
+  
+// };
+
+btnDeleteItens.addEventListener('click', () => {
+  olCartItems.innerHTML = '';
+  organizadorLocalStorage = [];
+  saveCartItems(organizadorLocalStorage);
+});
 
 const render = () => {
   organizadorLocalStorage = getSavedCartItems('cartItems') || [];
