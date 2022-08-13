@@ -3,8 +3,21 @@ const cartItems = document.querySelector('.cart__items');
 const btnDeleteItens = document.querySelector('.empty-cart');
 const olCartItems = document.querySelector('#ol-cart-itens');
 const totalPrice = document.querySelector('.total-price');
+const container = document.querySelector('section.container');
 
 let organizadorLocalStorage = []; // aula do Guthias e da Hellen
+
+const createLoading = () => {
+  const carregando = document.createElement('div');
+  carregando.className = 'loading';
+  carregando.innerText = 'carregando...';
+  console.log(carregando);
+  container.appendChild(carregando);
+};
+
+const removeLoading = () => {
+  document.querySelector('.loading').remove();
+};
 
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
@@ -106,10 +119,12 @@ const render = () => {
   organizadorLocalStorage = getSavedCartItems('cartItems') || [];
   console.log(organizadorLocalStorage);
   organizadorLocalStorage.forEach((e) => cartItems.appendChild(createCartItemElement(e)));
-  totalCarrinho();
+  totalCarrinho();  
 };
 
 window.onload = async () => { 
+  createLoading();
   await infosFetchProducts('computador');
+  await removeLoading();
   render();
 };
